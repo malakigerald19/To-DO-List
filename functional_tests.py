@@ -15,9 +15,9 @@ class NewVisitorTest(unittest.TestCase):
 		#to check out its homepage
 		self.browser.get('http://localhost:8000')
 		# She notices the page title and header mention to-do lists
-		self.assertIn('To-Do lists', self.browser.title)
+		self.assertIn('To-Do', self.browser.title)
 		header_text = self.browser.find_element_by_tag_name('h1').text
-		self.assertIn('To-Do lists', header_text)
+		self.assertIn('To-Do', header_text)
 		#self.fail('Finish the test!')
 		# She is invited to enter a to-do item straight away
 		inputbox = self.browser.find_element_by_id('id_new_item')
@@ -33,7 +33,7 @@ class NewVisitorTest(unittest.TestCase):
 
 		table = self.browser.find_element_by_id('id_list_table')
 		rows - table.find_elements_by_tag_name('tr')
-		self.assertTrue(any(row.text == '1: Buy peacock feathers' for rdw in rows)
+		self.assertTrue(any(row.text == '1: Buy peacock feathers' for row in rows)
 		)
 		# There is still a textbox inviting her to add another item. She
 		# enters "Use peacock feathers to make a fly" (Edith is very methodical)
