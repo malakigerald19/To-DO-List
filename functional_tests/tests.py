@@ -1,10 +1,10 @@
+from django.test import LiveServerTestCase
 from selenium import webdriver
-import sys
-import traceback
 from selenium.webdriver.common.keys import Keys
 import unittest
 
-class NewVisitorTest(unittest.TestCase):
+
+class NewVisitorTest(LiveServerTestCase):
 	def setUp(self):
 		self.browser = webdriver.Firefox()
 		#self.browser.implicitly_wait(1)
@@ -20,7 +20,7 @@ class NewVisitorTest(unittest.TestCase):
 	def test_can_start_a_list_and_retrieve_it_later(self):
 		# Edith has heard about a cool new online to-do app. She goes
 		#to check out its homepage
-		self.browser.get('http://localhost:8000')
+		self.browser.get(self.live_server_url)
 		# She notices the page title and header mention to-do lists
 		self.assertIn('To-Do', self.browser.title)
 		header_text = self.browser.find_element_by_tag_name('h1').text
@@ -30,8 +30,8 @@ class NewVisitorTest(unittest.TestCase):
 		# She is invited to enter a to-do item straight away
 		inputbox = self.browser.find_element_by_id('id_new_item')
 		self.assertEqual(
-				inputbox.get_attribute('placeholder'), 
-				'Enter a to-do item'
+		inputbox.get_attribute('placeholder'), 
+		'Enter a to-do item'
 		)
 		# She types "Buy peacock feathers" into a text box (Edith's hobby
 		# is tying fly-fishing lures)
@@ -55,8 +55,8 @@ class NewVisitorTest(unittest.TestCase):
 		rows = table.find_elements_by_tag_name('tr')
 		self.assertIn('1: Buy peacock feathers', [row.text for row in rows])
 		self.assertIn(
-			'2: Use peacock feathers to make a fly' , 
-			[row.text for row in rows]
+		'2: Use peacock feathers to make a fly' , 
+		[row.text for row in rows]
 		)
 		# Edith wonders whether the site will remember her list. Then she sees
 		# that the site has generated a unique URL for here -- there is some
@@ -65,6 +65,3 @@ class NewVisitorTest(unittest.TestCase):
 		# She visits that URL - her to-do list is still there.
 
 		# Satisfied, she goes back to sleep
-
-if __name__ == '__main__':
-	unittest.main()
