@@ -5,6 +5,20 @@ import unittest
 
 
 class NewVisitorTest(LiveServerTestCase):
+	def test_layout_and_styling(self):
+		#Edith goes to the homepage
+		self.browser.get(self.live_server_url)
+		self.browser.set_window_size(1024,768)
+
+		#She notices the input box is nicely centered
+		# She starts a new list and sees the input is nicely
+		# centered there too
+		inputbox = self.browser.find_element_by_id('id_new_item')
+		self.assertAlmostEqual(
+			inputbox.location['x'] + inputbox.size['width'] / 2,
+			512,
+			delta=5)
+
 	def setUp(self):
 		self.browser = webdriver.Firefox()
 		#self.browser.implicitly_wait(1)
@@ -99,3 +113,4 @@ class NewVisitorTest(LiveServerTestCase):
 		# She visits that URL - her to-do list is still there.
 
 		# Satisfied, she goes back to sleep
+
