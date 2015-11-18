@@ -13,7 +13,7 @@ class LayoutAndStylingTest(FunctionalTest):
 		#She notices the input box is nicely centered
 		# She starts a new list and sees the input is nicely
 		# centered there too
-		inputbox = self.browser.find_element_by_id('id_new_item')
+		inputbox = self.get_item_input_box()
 		self.assertAlmostEqual(
 			inputbox.location['x'] + inputbox.size['width'] / 2,
 			512,
