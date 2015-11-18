@@ -1,24 +1,28 @@
-#from django.test import LiveServerTestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
+from unittest import skip
+import sys
 
 
-class NewVisitorTest(StaticLiveServerTestCase):
-	def test_layout_and_styling(self):
-		#Edith goes to the homepage
-		self.browser.get(self.live_server_url)
-		self.browser.set_window_size(1024,768)
 
-		#She notices the input box is nicely centered
-		# She starts a new list and sees the input is nicely
-		# centered there too
-		inputbox = self.browser.find_element_by_id('id_new_item')
-		self.assertAlmostEqual(
-			inputbox.location['x'] + inputbox.size['width'] / 2,
-			512,
-			delta=5)
+
+class FunctionalTest(StaticLiveServerTestCase):
+	
+	@classmethod
+	def setUpClass(cls): 
+		for arg in sys.argv: 
+			if 'liveserver' in arg: 
+				cls.server_url = 'http://' + arg.split('=')[1] #
+				return 
+		super().setUpClass()
+		cls.server_url = cls.live_server_url
+		
+	@classmethod
+	def tearDownClass(cls):
+		if cls.server_url == cls.live_server_url:
+			super().tearDownClass()
 
 	def setUp(self):
 		self.browser = webdriver.Firefox()
@@ -31,6 +35,8 @@ class NewVisitorTest(StaticLiveServerTestCase):
 		table = self.browser.find_element_by_id('id_list_table')
 		rows = table.find_elements_by_tag_name('tr')
 		self.assertIn(row_text, [row.text for row in rows])
+
+class NewVisitorTest(FunctionalTest):
 
 	def test_can_start_a_list_and_retrieve_it_later(self):
 		# Edith has heard about a cool new online to-do app. She goes
@@ -45,9 +51,9 @@ class NewVisitorTest(StaticLiveServerTestCase):
 		# She is invited to enter a to-do item straight away
 		inputbox = self.browser.find_element_by_id('id_new_item')
 		self.assertEqual(
-		inputbox.get_attribute('placeholder'), 
-		'Enter a to-do item'
-		)
+			inputbox.get_attribute('placeholder'), 
+			'Enter a to-do item'
+			)
 		# She types "Buy peacock feathers" into a text box (Edith's hobby
 		# is tying fly-fishing lures)
 		inputbox.send_keys('Buy peacock feathers')
@@ -72,9 +78,9 @@ class NewVisitorTest(StaticLiveServerTestCase):
 		rows = table.find_elements_by_tag_name('tr')
 		self.assertIn('1: Buy peacock feathers', [row.text for row in rows])
 		self.assertIn(
-		'2: Use peacock feathers to make a fly' , 
-		[row.text for row in rows]
-		)
+			'2: Use peacock feathers to make a fly' , 
+			[row.text for row in rows]
+			)
 		#The page updates again, and now shows both items on her list
 		self.check_for_row_in_list_table('2: Use peacock feathers to make a fly')
 		self.check_for_row_in_list_table('1: Buy peacock feathers')
@@ -114,4 +120,44 @@ class NewVisitorTest(StaticLiveServerTestCase):
 		# She visits that URL - her to-do list is still there.
 
 		# Satisfied, she goes back to sleep
+class LayoutAndStylingtest(FunctionalTest):
 
+	def test_layout_and_styling(self):
+		#Edith goes to the homepage
+		self.browser.get(self.live_server_url)
+		self.browser.set_window_size(1024,768)
+
+		#She notices the input box is nicely centered
+		# She starts a new list and sees the input is nicely
+		# centered there too
+		inputbox = self.browser.find_element_by_id('id_new_item')
+		self.assertAlmostEqual(
+		inputbox.location['x'] + inputbox.size['width'] / 2,
+		512,
+		delta=5)
+
+		inputbox.send_keys('testing\n')
+		inputbox = self.browser.find_element_by_id('id_new_item')
+		self.assertAlmostEqual(
+		inputbox.location['x'] + inputbox.size['width'] / 2,
+		512,
+		delta=5)
+
+
+class ItemValidationTest(FunctionalTest):
+	@skip
+	def test_cannot_add_empty_list_items(self):
+		#Edith goes to the home page and accidentally tries to submit
+		#an empty list item. She hits Enter on the empty input box
+
+		#The homepage refreshes, and there is an error message saying
+		#that list items cannot be blank
+
+		#She tries again with some text for the item, which now works
+
+		#Perversely, she now decides to submit a second blank list item
+
+		#She receives a similar warning on the list page
+
+		#And she can correct it by filling some text in
+		self.fail('Write me!')
